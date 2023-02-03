@@ -18,7 +18,7 @@ function handleToggleColorButton() {
 
 function renderColorBtns() {
 	return `
-        <button id="yellow-btn"></button>
+        <button id="red-btn"></button>
         <button id="orange-btn"></button>
         <button id="purple-btn"></button>
         <button id="blue-btn"></button>
@@ -28,11 +28,11 @@ function renderColorBtns() {
 
 function render() {
 	if (showColorButtons) {
-		$("show-color-btns").text("-");
+		$("#show-color-btns").html(`<i class="fa-solid fa-angle-up"></i>`);
 		$("#color-btn-list").empty();
 		$("#color-btn-list").append(renderColorBtns());
 	} else {
-		$("show-color-btns").text("+");
+		$("#show-color-btns").html(`<i class="fa-solid fa-plus"></i>`);
 		$("#color-btn-list").empty();
 	}
 }

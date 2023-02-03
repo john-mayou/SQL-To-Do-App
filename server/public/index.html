@@ -4,6 +4,10 @@
 		<meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+		/>
 		<script src="./vendors/jquery.js"></script>
 		<script src="./scripts/client.js"></script>
 		<link rel="stylesheet" href="./styles/style.css" />
@@ -12,15 +16,37 @@
 	<body>
 		<header id="header">
 			<nav id="navbar">
-				<div class="primary-heading__box">
-					<h1 class="primary-heading">To Do</h1>
-					<h1 class="primary-heading">Board</h1>
+				<div id="main-logo__box">
+					<img
+						src="./images/todo-checkmark.png"
+						alt="logo"
+						id="main-logo-img"
+					/>
 				</div>
 
-				<button id="show-color-btns">+</button>
+				<button id="show-color-btns">
+					<i class="fa-solid fa-plus"></i>
+				</button>
 				<div id="color-btn-list"></div>
 			</nav>
 		</header>
-		<main id="main"></main>
+		<main id="main">
+			<section id="section-switch-btns__section">
+				<button id="show-completed" class="section-switch-btn">
+					Active
+				</button>
+				<button id="show-completed" class="section-switch-btn">
+					Completed
+				</button>
+				<button id="show-completed" class="section-switch-btn">
+					Categories
+				</button>
+			</section>
+			<section id="todo-content__section">
+				<div id="main-heading__box">
+					<!-- <h1 class="section-heading">To Do</h1> -->
+				</div>
+			</section>
+		</main>
 	</body>
 </html>
