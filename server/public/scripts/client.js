@@ -2,6 +2,7 @@ $(document).ready(onReady);
 
 function onReady() {
 	$("#show-color-btns").on("click", handleToggleColorButton);
+	$("#color-btn-list").on("click", "button", handleCreateColorTodo);
 }
 
 // State
@@ -15,6 +16,8 @@ function handleToggleColorButton() {
 	}
 	render();
 }
+
+function handleCreateColorTodo() {}
 
 function renderColorBtns() {
 	return `

@@ -9,10 +9,13 @@ Your project description goes here. What problem did you solve? How did you solv
 Additional README details can be found [here](https://github.com/PrimeAcademy/readme-template/blob/master/README.md).
 
 // database
+id SERIAL
 description VARCHAR(120)
+category VARCHAR(30)
+color VARCHAR(30)
 isComplete BOOLEAN
-timeStampCreated TIME
-timeCompleted TIME
+timeStampCreated TIMESTAMP
+timeStampCompleted TIMESTAMP
 
 // table fields
 title

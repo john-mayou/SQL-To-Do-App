@@ -78,19 +78,23 @@ body {
 	width: 1rem;
 }
 
-#red-btn {
+#red-btn,
+.red-box {
 	background-color: orangered;
 }
 
-#orange-btn {
+#orange-btn,
+.orange-box {
 	background-color: orange;
 }
 
-#purple-btn {
+#purple-btn,
+.purple-box {
 	background-color: purple;
 }
 
-#blue-btn {
+#blue-btn,
+.blue-box {
 	background-color: lightblue;
 }
 
@@ -147,4 +151,13 @@ body {
 .section-switch-btn:active {
 	box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 	transform: translateY(0);
+}
+
+#content__section {
+	margin: 1rem;
+	border: 1px solid black;
+}
+
+#todo-content__box {
+	display: grid;
 }
