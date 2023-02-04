@@ -142,7 +142,7 @@ function renderNewCategoryInputs() {
 		$("#new-category-inputs__section").append(`
 			<input id="category-title-input" type="text" placeholder="Category Title">
 			<input id="category-color-input" type="color">
-			<button id="add-new-category-btn">Add</button>
+			<button id="add-new-category-btn" class="btn btn-outline-dark">Add</button>
 		`);
 	}
 }
