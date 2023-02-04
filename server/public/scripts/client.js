@@ -5,14 +5,24 @@ function onReady() {
 	$("#show-color-btns").on("click", handleToggleColorButton);
 	$("#color-btn-list").on(
 		"click",
-		"button:not(#add-category-btn)",
+		"button:not(#show-category-inputs-btn)",
 		handleCreateColorTodo
 	);
-	$(document).on("click", "#add-category-btn", handleAddCategories);
+	$("#color-btn-list").on(
+		"click",
+		"#show-category-inputs-btn",
+		handleShowNewCategoryInputs
+	);
+	$("#new-category-inputs__section").on(
+		"click",
+		"#add-new-category-btn",
+		handleAddNewCategory
+	);
 }
 
 // State
 let showColorButtons = false;
+let showNewCategoryFields = false;
 let colorOfNewInputBox = null;
 let categoryOptions = [];
 
@@ -43,8 +53,31 @@ function handleCreateColorTodo() {
 // 	}
 // }
 
-function handleAddCategories() {
-	console.log("in add category");
+function handleShowNewCategoryInputs() {
+	showNewCategoryFields = true;
+	render();
+}
+
+function handleAddNewCategory() {
+	let showNewCategoryFields = false;
+	const newCategory = {
+		category: $("#category-title-input").val(),
+		color: $("#category-color-input").val(),
+	};
+
+	console.log("new category", newCategory);
+	$.ajax({
+		url: "/category",
+		method: "POST",
+		data: newCategory,
+	})
+		.then((response) => {
+			console.log("Response POST /category", response);
+			getCategories();
+		})
+		.catch((error) => {
+			console.log("Error on POST /category", error);
+		});
 }
 
 function getCategories() {
@@ -53,11 +86,12 @@ function getCategories() {
 		method: "GET",
 	})
 		.then((response) => {
+			console.log("Response GET /category", response);
 			categoryOptions = response;
 			render();
 		})
 		.catch((error) => {
-			console.log("Error getCategories", error);
+			console.log("Error on GET /category", error);
 		});
 }
 
@@ -75,7 +109,7 @@ function renderColorBtns() {
 			`);
 		}
 		$("#color-btn-list").append(
-			`<button id="add-category-btn"><i class="fa-solid fa-plus"></i></button>`
+			`<button id="show-category-inputs-btn"><i class="fa-solid fa-plus"></i></button>`
 		);
 	} else {
 		$("#show-color-btns").html(`<i class="fa-solid fa-plus"></i>`);
@@ -83,7 +117,7 @@ function renderColorBtns() {
 	}
 }
 
-function renderNewInputBox() {
+function renderNewTaskBox() {
 	const inputBoxHTML = `
 		<div class="task-box">
 			<textarea id="description-input" placeholder="Description"></textarea>
@@ -102,7 +136,19 @@ function renderNewInputBox() {
 	}
 }
 
+function renderNewCategoryInputs() {
+	if (showNewCategoryFields) {
+		$("#new-category-inputs__section").empty();
+		$("#new-category-inputs__section").append(`
+			<input id="category-title-input" type="text" placeholder="Category Title">
+			<input id="category-color-input" type="color">
+			<button id="add-new-category-btn">Add</button>
+		`);
+	}
+}
+
 function render() {
 	renderColorBtns();
-	renderNewInputBox();
+	renderNewTaskBox();
+	renderNewCategoryInputs();
 }

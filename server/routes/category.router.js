@@ -15,6 +15,27 @@ router.get("/", (req, res) => {
 		})
 		.catch((error) => {
 			console.log(`Error making GET query: ${queryText}`, error);
+			res.sendStatus(500);
+		});
+});
+
+router.post("/", (req, res) => {
+	let newCategory = req.body;
+	console.log("new category", newCategory);
+	let queryText = `
+        INSERT INTO "categories" ("category", "color")
+        VALUES ($1, $2);
+    `;
+
+	let queryValues = [newCategory.category, newCategory.color];
+
+	pool.query(queryText, queryValues)
+		.then(() => {
+			res.sendStatus(201);
+		})
+		.catch((error) => {
+			console.log(`Error making POST query: ${queryText}`, error);
+			res.sendStatus(500);
 		});
 });
 
