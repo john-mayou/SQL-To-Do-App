@@ -36,9 +36,10 @@ let showNewTaskInput = false;
 let idOfNewTaskCategory = null;
 
 // Task card states
+let currentPage = "Active";
 
 // Database states
-let categoryOptions = [];
+let categories = [];
 let tasks = [];
 
 // Helper functions
@@ -176,7 +177,7 @@ function getCategories() {
 	})
 		.then((response) => {
 			console.log("Response GET /category", response);
-			categoryOptions = response;
+			categories = response;
 			render();
 		})
 		.catch((error) => {
@@ -189,7 +190,7 @@ function renderColorBtns() {
 	if (showColorButtons) {
 		$("#show-color-btns").html(`<i class="fa-solid fa-angle-up"></i>`);
 		$("#color-btn-list").empty();
-		for (let { id, category, color } of categoryOptions) {
+		for (let { id, category, color } of categories) {
 			$("#color-btn-list").append(`
 				<button
 					data-id="${id}"
@@ -230,8 +231,45 @@ function renderNewCategoryInputs() {
 	}
 }
 
+function renderActiveTaskCards() {
+	$("#todo-content__box").empty();
+	for (let task of tasks) {
+		const color = categories.find((c) => c.id === task.categoryId).color;
+		$("#todo-content__box").append(`
+			<div class="card-box" data-id="${task.id}" style="background-color:${color}">
+				<p class="card-description">${task.description}</p>
+				<div class="card-footer">
+					<span class="card-date">${task.timeStampCreated}</span>
+					<div class="card-btns__box">
+						<button class="card-edit-btn"><i class="fa-solid fa-pencil"></i></button>
+						<button class="complete-task-btn"><i class="fa-solid fa-check"></i></button>
+					</div>
+				</div>
+			</div>
+		`);
+	}
+}
+
+function renderCurrentTab(page) {
+	switch (page) {
+		case "Active":
+			renderActiveTaskCards();
+			return;
+		case "Completed":
+			// renderCompletedTaskCards();
+			return;
+		case "Categories":
+			// renderTaskCardsCategories();
+			return;
+		default:
+			console.log("Invalid page to render");
+	}
+}
+
 function render() {
 	renderColorBtns();
 	renderNewCategoryInputs();
 	renderNewTaskInput();
+
+	renderCurrentTab(currentPage);
 }
