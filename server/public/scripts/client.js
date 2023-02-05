@@ -269,7 +269,6 @@ function handleToggleCompleteTask() {
 	const id = $(this).closest(".card-box").data("id");
 	const currentState = tasks.find((t) => t.id === id);
 	let inverseIsCompleteValue = getInverseBoolean(currentState.isComplete);
-	console.log(inverseIsCompleteValue);
 
 	const updatedTask = {
 		description: currentState.description,
@@ -295,7 +294,18 @@ function handleToggleCompleteTask() {
 }
 
 function handleDeleteTask() {
-	console.log("in delete task");
+	const id = $(this).closest(".card-box").data("id");
+
+	$.ajax({
+		url: `/task/${id}`,
+		method: "DELETE",
+	})
+		.then(() => {
+			getTasks();
+		})
+		.catch((error) => {
+			console.log("Error on DELETE /task", error);
+		});
 }
 
 function handleChangeCurrentPage() {
