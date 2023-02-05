@@ -127,7 +127,13 @@ body {
 } */
 
 #section-switch-btns__section {
+	border: 1px solid red;
 	margin: 1rem;
+	display: flex;
+	justify-content: space-between;
+}
+
+#page-switch-btns__box {
 	display: flex;
 	gap: 1rem;
 }
@@ -156,6 +162,30 @@ body {
 .section-switch-btn:active {
 	box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 	transform: translateY(0);
+}
+
+#filter-and-sort__box {
+	display: flex;
+	gap: 0.5rem;
+}
+
+#sort-by-date-dropdown {
+	padding: 0.3rem;
+	font-size: 1rem;
+}
+
+#show-category-dropdown {
+	padding: 0.3rem;
+	font-size: 1rem;
+}
+
+#description-search {
+	padding: 0.3rem;
+	font-size: 1rem;
+	width: 10rem;
+}
+
+#clear-search-btn {
 }
 
 #new-category-inputs__section {

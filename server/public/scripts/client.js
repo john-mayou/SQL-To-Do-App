@@ -31,18 +31,18 @@ function onReady() {
 	);
 
 	// After this is task box event listeners
+	$("#todo-content__box").on("click", ".card-edit-btn", handleEditTask);
 }
 
 // State
 // Toggling input fields and buttons
 let showColorButtons = false;
-let showNewCategoryFields = false;
-let showNewTaskInput = false;
 let idOfNewTaskCategory = null;
+let currentInputState = "Empty";
 
 // Task card states
 let currentPage = "Active";
-let IdCurrentCardBeingEdited = null;
+let idCurrentCardBeingEdited = null;
 
 // Database states
 let categories = [];
@@ -86,27 +86,31 @@ function getDateAndTime() {
 	return `${month} ${now.getDate()}, ${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}`;
 }
 
+function toTitleCase(str) {
+	return str
+		.split(" ")
+		.map((w) => w[0].toUpperCase() + w.substring(1).toLowerCase())
+		.join(" ");
+}
+
 // Toggling through selector and input fields
 function handleToggleColorButton() {
-	if (showColorButtons) {
-		showColorButtons = false;
-	} else {
-		showColorButtons = true;
-	}
+	showColorButtons ? (showColorButtons = false) : (showColorButtons = true);
 	render();
 }
 
 function handleShowNewTaskInput() {
 	idOfNewTaskCategory = $(this).data("id");
-	showNewTaskInput = true;
-	showNewCategoryFields = false;
-	showColorButtons = false;
+	currentInputState = "New Task";
+
+	handleToggleColorButton();
 	render();
 }
 
 function handleShowNewCategoryInputs() {
-	showNewCategoryFields = true;
-	showNewTaskInput = false;
+	currentInputState = "New Category";
+
+	handleToggleColorButton();
 	render();
 }
 
@@ -127,14 +131,12 @@ function handleAddNewTask() {
 	})
 		.then((response) => {
 			console.log("Response POST /task", response);
+			currentInputState = "Empty";
 			getTasks();
 		})
 		.catch((error) => {
 			console.log("Error on POST /task", error);
 		});
-
-	// reseting state
-	showNewTaskInput = false;
 }
 
 function getTasks() {
@@ -153,9 +155,8 @@ function getTasks() {
 }
 
 function handleAddNewCategory() {
-	let showNewCategoryFields = false;
 	const newCategory = {
-		category: $("#category-title-input").val(),
+		category: toTitleCase($("#category-title-input").val()),
 		color: $("#category-color-input").val(),
 	};
 
@@ -166,6 +167,7 @@ function handleAddNewCategory() {
 	})
 		.then((response) => {
 			console.log("Response POST /category", response);
+			currentInputState = "Empty";
 			getCategories();
 		})
 		.catch((error) => {
@@ -197,11 +199,16 @@ function handleDeleteCategory() {
 	})
 		.then((response) => {
 			console.log("Response DELETE /category/:id", response);
+			currentInputState = "Empty";
 			getCategories();
 		})
 		.catch((error) => {
 			console.log("Error on GET /category/:id", error);
 		});
+}
+
+function handleEditTask() {
+	idCurrentCardBeingEdited = $(this).closest(".card-box").data("id");
 }
 
 // Render functions
@@ -228,27 +235,25 @@ function renderColorBtns() {
 }
 
 function renderNewTaskInput() {
-	const textAreaHTML = `
+	const HTML = `
 			<textarea id="description-input" placeholder="Task Description"></textarea>
 			<button id="add-new-task-btn" class="btn btn-success">Add Task</button>
 			<button id="delete-category-btn" class="btn btn-danger">Delete Category</button>
 	`;
 
-	if (showNewTaskInput) {
-		$("#new-category-inputs__section").empty();
-		$("#new-category-inputs__section").append(textAreaHTML);
-	}
+	$("#new-category-inputs__section").empty();
+	$("#new-category-inputs__section").append(HTML);
 }
 
 function renderNewCategoryInputs() {
-	if (showNewCategoryFields) {
-		$("#new-category-inputs__section").empty();
-		$("#new-category-inputs__section").append(`
+	const HTML = `
 			<input id="category-title-input" type="text" placeholder="Category Title">
 			<input id="category-color-input" type="color">
 			<button id="add-new-category-btn" class="btn btn-outline-dark">Add</button>
-		`);
-	}
+	`;
+
+	$("#new-category-inputs__section").empty();
+	$("#new-category-inputs__section").append(HTML);
 }
 
 function renderActiveTaskCards() {
@@ -273,25 +278,50 @@ function renderActiveTaskCards() {
 	}
 }
 
-function renderCurrentTab(page) {
-	switch (page) {
+function renderShowCategoryDropdown() {
+	$("#show-category-dropdown").empty();
+	$("#show-category-dropdown").append(
+		`<option value="">Show category</option>`
+	);
+	for (let { category } of categories) {
+		$("#show-category-dropdown").append(`
+			<option value="${category}">${category}</option>
+		`);
+	}
+}
+
+function renderCurrentTab(currentPage) {
+	switch (currentPage) {
 		case "Active":
 			renderActiveTaskCards();
 			return;
 		case "Completed":
 			// renderCompletedTaskCards();
 			return;
-		case "Categories":
-			// renderTaskCardsCategories();
-			return;
 		default:
 			console.log("Invalid page to render");
 	}
 }
 
+function renderCurrentInputSection(currentInput) {
+	switch (currentInput) {
+		case "New Category":
+			renderNewCategoryInputs();
+			return;
+		case "New Task":
+			renderNewTaskInput();
+			return;
+		case "Empty":
+			$("#new-category-inputs__section").empty();
+		default:
+			console.log("Invalid input section to render");
+	}
+}
+
 function render() {
 	renderColorBtns();
-	renderNewCategoryInputs();
-	renderNewTaskInput();
+	renderShowCategoryDropdown();
+
+	renderCurrentInputSection(currentInputState);
 	renderCurrentTab(currentPage);
 }
