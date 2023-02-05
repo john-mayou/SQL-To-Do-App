@@ -279,16 +279,19 @@ body {
 	height: 2rem;
 }
 
-.card-edit-btn {
-	font-size: 0.8rem;
-}
+/* .card-edit-btn {
+	font-size: 1rem;
+} */
 
 .complete-task-btn {
-	font-size: 1.3rem;
+	font-size: 1.4rem;
 }
 
 .cancel-edit-btn,
-.done-edit-btn {
+.done-edit-btn,
+.uncomplete-task-btn,
+.delete-task-btn,
+.card-edit-btn {
 	font-size: 1rem;
 }
 
