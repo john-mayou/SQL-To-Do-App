@@ -44,4 +44,36 @@ router.post("/", (req, res) => {
 		});
 });
 
+router.put("/:id", (req, res) => {
+	const updatedTask = req.body;
+
+	let queryText = `
+        UPDATE "tasks" 
+        SET "description"=$1,
+        "categoryId"=$2,
+        "isComplete"=$3,
+        "timeStampCreated"=$4,
+        "timeStampCompleted"=$5
+        WHERE id=$6;
+    `;
+
+	let queryValues = [
+		updatedTask.description,
+		updatedTask.categoryId,
+		updatedTask.isComplete,
+		updatedTask.timeStampCreated,
+		updatedTask.timeStampCompleted,
+		req.params.id,
+	];
+
+	pool.query(queryText, queryValues)
+		.then(() => {
+			res.sendStatus(204);
+		})
+		.catch((error) => {
+			console.log(`Error making PUT query: ${queryText}`, error);
+			res.sendStatus(500);
+		});
+});
+
 module.exports = router;

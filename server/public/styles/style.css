@@ -4,13 +4,11 @@
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
+	outline: none;
 }
 
 body {
 	font-size: 62.5%;
-}
-/* 93c6e7 */
-body {
 	padding: 3rem;
 	background: linear-gradient(
 		to bottom right,
@@ -105,30 +103,6 @@ body {
 	font-size: 0.6rem;
 }
 
-/* #red-btn,
-.red-box {
-	background-color: orangered;
-}
-
-#orange-btn,
-.orange-box {
-	background-color: orange;
-}
-
-#purple-btn,
-.purple-box {
-	background-color: purple;
-}
-
-#blue-btn,
-.blue-box {
-	background-color: lightblue;
-}
-
-#green-btn {
-	background-color: lightgreen;
-} */
-
 #main {
 	position: fixed;
 	margin-left: 75px;
@@ -136,6 +110,11 @@ body {
 	background-color: #fff;
 	width: calc(100vw - 75px - (3rem * 2));
 	height: calc(100vh - (3rem * 2));
+	overflow: scroll;
+}
+
+#main::-webkit-scrollbar {
+	display: none;
 }
 
 /* animations */
@@ -149,7 +128,13 @@ body {
 } */
 
 #section-switch-btns__section {
+	/* border: 1px solid red; */
 	margin: 1rem;
+	display: flex;
+	justify-content: space-between;
+}
+
+#page-switch-btns__box {
 	display: flex;
 	gap: 1rem;
 }
@@ -180,6 +165,30 @@ body {
 	transform: translateY(0);
 }
 
+#filter-and-sort__box {
+	display: flex;
+	gap: 1rem;
+}
+
+#sort-by-date-dropdown {
+	padding: 0.3rem;
+	font-size: 1rem;
+}
+
+.show-category-dropdown {
+	padding: 0.3rem;
+	font-size: 1rem;
+}
+
+#description-search {
+	padding: 0.3rem;
+	font-size: 1rem;
+	width: 10rem;
+}
+
+#clear-search-btn {
+}
+
 #new-category-inputs__section {
 	width: calc(100% - (1rem * 2));
 	height: 3rem;
@@ -202,7 +211,7 @@ body {
 	display: block;
 	padding-left: 7px;
 	font-size: 1.8rem;
-	width: 90%;
+	width: 70%;
 	height: 100%;
 }
 
@@ -234,6 +243,10 @@ body {
 	overflow: scroll;
 }
 
+.card-description::-webkit-scrollbar {
+	display: none;
+}
+
 .card-footer {
 	display: flex;
 	justify-content: space-between;
@@ -253,6 +266,8 @@ body {
 }
 
 .card-edit-btn,
+.cancel-edit-btn,
+.done-edit-btn,
 .complete-task-btn {
 	border: none;
 	border-radius: 50%;
@@ -268,4 +283,24 @@ body {
 
 .complete-task-btn {
 	font-size: 1.3rem;
+}
+
+.cancel-edit-btn,
+.done-edit-btn {
+	font-size: 1rem;
+}
+
+#new-edit-description {
+	width: 100%;
+	height: 95%;
+	padding: 3px;
+	border-radius: 5px;
+}
+
+#edit-category-select {
+	padding: 2px;
+	font-size: 0.7rem;
+	width: 5.5rem;
+	margin-bottom: 5px;
+	border-radius: 5px;
 }
