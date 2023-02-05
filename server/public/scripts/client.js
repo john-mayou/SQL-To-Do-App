@@ -32,6 +32,8 @@ function onReady() {
 
 	// After this is task box event listeners
 	$("#todo-content__box").on("click", ".card-edit-btn", handleEditTask);
+	$("#todo-content__box").on("click", ".cancel-edit-btn", handleCancelEdit);
+	$("#todo-content__box").on("click", ".done-edit-btn", handleDoneEditing);
 }
 
 // State
@@ -217,7 +219,30 @@ function handleCancelEdit() {
 	render();
 }
 
-function handleDoneEdit() {
+function handleDoneEditing() {
+	const id = idCurrentCardBeingEdited;
+	const currentState = tasks.find((t) => t.id === id);
+
+	const updatedTask = {
+		description: $("#new-edit-description").val(),
+		categoryId: Number($("#edit-category-select :selected").val()),
+		isComplete: currentState.isComplete,
+		timeStampCreated: currentState.timeStampCreated,
+		timeStampCompleted: currentState.timeStampCompleted,
+	};
+
+	$.ajax({
+		url: `/task/${id}`,
+		method: "PUT",
+		data: updatedTask,
+	})
+		.then(() => {
+			getTasks();
+		})
+		.catch((error) => {
+			console.log("Error on PUT /task", error);
+		});
+
 	idCurrentCardBeingEdited = null;
 	render();
 }
@@ -288,9 +313,9 @@ function renderShowCategoryDropdown() {
 		`<option value="">Show category</option>`
 	);
 
-	for (let { category } of categories) {
+	for (let { id, category } of categories) {
 		$(".show-category-dropdown").append(`
-			<option value="${category}">${category}</option>
+			<option value="${id}">${category}</option>
 		`);
 	}
 }
@@ -304,7 +329,7 @@ function renderCurrentTab(currentPage) {
 			// renderCompletedTaskCards();
 			return;
 		default:
-			console.log("Invalid page to render");
+			console.log("Invalid page to render", currentPage);
 	}
 }
 
@@ -318,8 +343,9 @@ function renderCurrentInputSection(currentInput) {
 			return;
 		case "Empty":
 			$("#new-category-inputs__section").empty();
+			return;
 		default:
-			console.log("Invalid input section to render");
+			console.log("Invalid input section to render", currentInput);
 	}
 }
 
@@ -352,8 +378,8 @@ function createEditTaskCard(task, color) {
 		<div class="card-footer">
 			<select id="edit-category-select" class="show-category-dropdown"></select>
 			<div class="card-btns__box">
-				<button class="cancel-edit-btn">C</button>
-				<button class="done-edit-btn">Y</button>
+				<button class="cancel-edit-btn"><i class="fa-solid fa-ban"></i></button>
+				<button class="done-edit-btn"><i class="fa-solid fa-plus"></i></button>
 			</div>
 		</div>
 	</div>`;
