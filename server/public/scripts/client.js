@@ -2,12 +2,8 @@ $(document).ready(onReady);
 
 function onReady() {
 	getCategories();
+	getTasks();
 	$("#show-color-btns").on("click", handleToggleColorButton);
-	$("#color-btn-list").on(
-		"click",
-		"button:not(#show-category-inputs-btn)",
-		handleCreateColorTodo
-	);
 	$("#color-btn-list").on(
 		"click",
 		"#show-category-inputs-btn",
@@ -18,13 +14,67 @@ function onReady() {
 		"#add-new-category-btn",
 		handleAddNewCategory
 	);
+	$("#color-btn-list").on(
+		"click",
+		"button:not(#show-category-inputs-btn)",
+		handleShowNewTaskInput
+	);
+	$("#new-category-inputs__section").on(
+		"click",
+		"#add-new-task-btn",
+		handleAddNewTask
+	);
+
+	// After this is task box event listeners
 }
 
 // State
 let showColorButtons = false;
 let showNewCategoryFields = false;
-let colorOfNewInputBox = null;
+let showNewTaskInput = false;
+let idOfNewTaskCategory = null;
 let categoryOptions = [];
+let tasks = [];
+
+function getMonthFromNumber(number) {
+	if (number > 11) {
+		console.log("cannot convert number to month");
+	}
+	switch (number) {
+		case 0:
+			return "Jan";
+		case 1:
+			return "Feb";
+		case 2:
+			return "Mar";
+		case 3:
+			return "Apr";
+		case 4:
+			return "May";
+		case 5:
+			return "Jun";
+		case 6:
+			return "Jul";
+		case 7:
+			return "Aug";
+		case 8:
+			return "Sep";
+		case 9:
+			return "Oct";
+		case 10:
+			return "Nov";
+		case 11:
+			return "Nov";
+		default:
+			console.log("something wrong with month conversion");
+	}
+}
+
+function getDateAndTime() {
+	let now = new Date();
+	const month = getMonthFromNumber(now.getMonth());
+	return `${month} ${now.getDate()}, ${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}`;
+}
 
 function handleToggleColorButton() {
 	if (showColorButtons) {
@@ -35,27 +85,59 @@ function handleToggleColorButton() {
 	render();
 }
 
-function handleCreateColorTodo() {
-	console.log("in handle create color todo");
-	// showColorButtons = false;
-	// colorOfNewInputBox = $(this).attr("id").split("-")[0];
-	// render();
-	// colorOfNewInputBox = null;
+function handleShowNewTaskInput() {
+	idOfNewTaskCategory = $(this).data("id");
+	showNewTaskInput = true;
+	showNewCategoryFields = false;
+	showColorButtons = false;
+	render();
 }
-
-// function handleAddTask() {
-// 	let color = $(this).attr("id").split("-")[0];
-
-// 	let newTask = {
-// 		description: '',
-// 		category = '',
-
-// 	}
-// }
 
 function handleShowNewCategoryInputs() {
 	showNewCategoryFields = true;
+	showNewTaskInput = false;
 	render();
+}
+
+function handleAddNewTask() {
+	let newTask = {
+		description: $("#description-input").val(),
+		categoryId: idOfNewTaskCategory,
+		isComplete: false,
+		timeStampCreated: getDateAndTime(),
+		timeStampCompleted: null,
+	};
+
+	$.ajax({
+		url: "/task",
+		method: "POST",
+		data: newTask,
+	})
+		.then((response) => {
+			console.log("Response POST /task", response);
+			getTasks();
+		})
+		.catch((error) => {
+			console.log("Error on POST /task", error);
+		});
+
+	// reseting state
+	showNewTaskInput = false;
+}
+
+function getTasks() {
+	$.ajax({
+		url: "/task",
+		method: "GET",
+	})
+		.then((response) => {
+			console.log("Response GET /task", response);
+			tasks = response;
+			render();
+		})
+		.catch((error) => {
+			console.log("Error on GET /task", error);
+		});
 }
 
 function handleAddNewCategory() {
@@ -65,7 +147,6 @@ function handleAddNewCategory() {
 		color: $("#category-color-input").val(),
 	};
 
-	console.log("new category", newCategory);
 	$.ajax({
 		url: "/category",
 		method: "POST",
@@ -117,22 +198,15 @@ function renderColorBtns() {
 	}
 }
 
-function renderNewTaskBox() {
-	const inputBoxHTML = `
-		<div class="task-box">
-			<textarea id="description-input" placeholder="Description"></textarea>
-			<select id="category-input">
-				<option id="add-category">Add Category <i class="fa-solid fa-plus"></i></option>
-			</select>
-		</div>
+function renderNewTaskInput() {
+	const textAreaHTML = `
+			<textarea id="description-input" placeholder="Task Description"></textarea>
+			<button id="add-new-task-btn" class="btn btn-outline-dark">Add</button>
 	`;
-	if (colorOfNewInputBox) {
-		$("#todo-content__box").prepend(inputBoxHTML);
-		for (let category of taskCategoryOptions) {
-			$("#category-input").prepend(`
-				<option value='${category.toLocaleLowerCase()}'>${category}</option>
-			`);
-		}
+
+	if (showNewTaskInput) {
+		$("#new-category-inputs__section").empty();
+		$("#new-category-inputs__section").append(textAreaHTML);
 	}
 }
 
@@ -149,6 +223,6 @@ function renderNewCategoryInputs() {
 
 function render() {
 	renderColorBtns();
-	renderNewTaskBox();
 	renderNewCategoryInputs();
+	renderNewTaskInput();
 }

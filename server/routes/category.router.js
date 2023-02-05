@@ -21,7 +21,6 @@ router.get("/", (req, res) => {
 
 router.post("/", (req, res) => {
 	let newCategory = req.body;
-	console.log("new category", newCategory);
 	let queryText = `
         INSERT INTO "categories" ("category", "color")
         VALUES ($1, $2);
