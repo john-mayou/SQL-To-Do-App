@@ -2,9 +2,10 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../modules/pool");
 
-router.get("/", (req, res) => {
+router.get("/:order", (req, res) => {
 	const queryText = `
-        SELECT * FROM "tasks";
+        SELECT * FROM "tasks"
+        ORDER BY "id" ${req.params.order};
     `;
 
 	pool.query(queryText)
