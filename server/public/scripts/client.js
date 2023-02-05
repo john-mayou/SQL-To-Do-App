@@ -44,7 +44,11 @@ function onReady() {
 		".uncomplete-task-btn",
 		handleToggleCompleteTask
 	);
-	$("#todo-content__box").on("click", ".delete-task-btn", handleDeleteTask);
+	$("#todo-content__box").on(
+		"click",
+		".delete-task-btn",
+		popupDeleteConfirmation
+	);
 
 	// Listeners for different page btns
 	$(".section-switch-btn").on("click", handleChangeCurrentPage);
@@ -57,7 +61,7 @@ let idOfNewTaskCategory = null;
 let currentInputState = "Empty";
 
 // Task card states
-let currentPage = "Active";
+let currentPageSelected = "Active";
 let idCurrentCardBeingEdited = null;
 
 // Database states
@@ -111,6 +115,24 @@ function toTitleCase(str) {
 
 function getInverseBoolean(boolean) {
 	return boolean ? false : true;
+}
+
+function popupDeleteConfirmation() {
+	const id = $(this).closest(".card-box").data("id");
+	Swal.fire({
+		title: "Are you sure?",
+		text: "You won't be able to revert this!",
+		icon: "warning",
+		showCancelButton: true,
+		cancelButtonColor: "#3085d6",
+		confirmButtonColor: "#d33",
+		confirmButtonText: "Yes, delete it!",
+	}).then((result) => {
+		if (result.isConfirmed) {
+			Swal.fire("Deleted!", "Your file has been deleted.", "success");
+			handleDeleteTask(id);
+		}
+	});
 }
 
 // Toggling through selector and input fields
@@ -269,7 +291,6 @@ function handleToggleCompleteTask() {
 	const id = $(this).closest(".card-box").data("id");
 	const currentState = tasks.find((t) => t.id === id);
 	let inverseIsCompleteValue = getInverseBoolean(currentState.isComplete);
-	console.log(inverseIsCompleteValue);
 
 	const updatedTask = {
 		description: currentState.description,
@@ -294,12 +315,22 @@ function handleToggleCompleteTask() {
 	render();
 }
 
-function handleDeleteTask() {
-	console.log("in delete task");
+function handleDeleteTask(id) {
+	$.ajax({
+		url: `/task/${id}`,
+		method: "DELETE",
+	})
+		.then(() => {
+			getTasks();
+		})
+		.catch((error) => {
+			console.log("Error on DELETE /task", error);
+		});
 }
 
 function handleChangeCurrentPage() {
-	currentPage = $(this).text();
+	currentPageSelected = $(this).text().trim();
+	console.log("this is the new page", currentPageSelected.length);
 	render();
 }
 
@@ -398,12 +429,30 @@ function renderCurrentTab(currentPage) {
 	switch (currentPage) {
 		case "Active":
 			renderActiveTaskCards();
+			renderActiveTabStyling("Active");
 			return;
 		case "Completed":
 			renderCompletedTaskCards();
+			renderActiveTabStyling("Completed");
 			return;
 		default:
 			console.log("Invalid page to render", currentPage);
+	}
+}
+
+function renderActiveTabStyling(currentPage) {
+	console.log("renderStyling", currentPage);
+	switch (currentPage) {
+		case "Active":
+			$("#completed-tab-btn").removeClass("active-page");
+			$("#active-tab-btn").addClass("active-page");
+			return;
+		case "Completed":
+			$("#active-tab-btn").removeClass("active-page");
+			$("#completed-tab-btn").addClass("active-page");
+			return;
+		default:
+			console.log("Invalid active tab to style", currentPage);
 	}
 }
 
@@ -477,7 +526,7 @@ function render() {
 	renderColorBtns();
 
 	renderCurrentInputSection(currentInputState);
-	renderCurrentTab(currentPage);
+	renderCurrentTab(currentPageSelected);
 
 	// after page loads
 	renderShowCategoryDropdown();

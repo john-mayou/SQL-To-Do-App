@@ -14,6 +14,7 @@
 			integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
 			crossorigin="anonymous"
 		/>
+		<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 		<script src="./vendors/jquery.js"></script>
 		<script src="./scripts/client.js"></script>
 		<link rel="stylesheet" href="./styles/style.css" />
@@ -39,8 +40,12 @@
 		<main id="main">
 			<section id="section-switch-btns__section">
 				<div id="page-switch-btns__box">
-					<button class="section-switch-btn">Active</button>
-					<button class="section-switch-btn">Completed</button>
+					<button id="active-tab-btn" class="section-switch-btn">
+						Active
+					</button>
+					<button id="completed-tab-btn" class="section-switch-btn">
+						Completed
+					</button>
 				</div>
 				<div id="filter-and-sort__box">
 					<select id="sort-by-date-dropdown">

@@ -3,7 +3,7 @@ const router = express.Router();
 const pool = require("../modules/pool");
 
 router.get("/", (req, res) => {
-	let queryText = `
+	const queryText = `
         SELECT * FROM "tasks";
     `;
 
@@ -20,13 +20,13 @@ router.get("/", (req, res) => {
 });
 
 router.post("/", (req, res) => {
-	let newTask = req.body;
-	let queryText = `
+	const newTask = req.body;
+	const queryText = `
         INSERT INTO "tasks" ("description", "categoryId", "isComplete", "timeStampCreated", "timeStampCompleted")
         VALUES ($1, $2, $3, $4, $5);
     `;
 
-	let queryValues = [
+	const queryValues = [
 		newTask.description,
 		newTask.categoryId,
 		newTask.isComplete,
@@ -47,7 +47,7 @@ router.post("/", (req, res) => {
 router.put("/:id", (req, res) => {
 	const updatedTask = req.body;
 
-	let queryText = `
+	const queryText = `
         UPDATE "tasks" 
         SET "description"=$1,
         "categoryId"=$2,
@@ -57,7 +57,7 @@ router.put("/:id", (req, res) => {
         WHERE id=$6;
     `;
 
-	let queryValues = [
+	const queryValues = [
 		updatedTask.description,
 		updatedTask.categoryId,
 		updatedTask.isComplete,
@@ -67,6 +67,24 @@ router.put("/:id", (req, res) => {
 	];
 
 	pool.query(queryText, queryValues)
+		.then(() => {
+			res.sendStatus(200);
+		})
+		.catch((error) => {
+			console.log(`Error making PUT query: ${queryText}`, error);
+			res.sendStatus(500);
+		});
+});
+
+router.delete("/:id", (req, res) => {
+	const queryText = `
+        DELETE FROM "tasks"
+        WHERE id=$1;
+    `;
+
+	const queryParams = [req.params.id];
+
+	pool.query(queryText, queryParams)
 		.then(() => {
 			res.sendStatus(204);
 		})
