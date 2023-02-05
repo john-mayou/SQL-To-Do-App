@@ -57,7 +57,7 @@ let idOfNewTaskCategory = null;
 let currentInputState = "Empty";
 
 // Task card states
-let currentPage = "Active";
+let currentPageSelected = "Active";
 let idCurrentCardBeingEdited = null;
 
 // Database states
@@ -309,7 +309,8 @@ function handleDeleteTask() {
 }
 
 function handleChangeCurrentPage() {
-	currentPage = $(this).text();
+	currentPageSelected = $(this).text().trim();
+	console.log("this is the new page", currentPageSelected.length);
 	render();
 }
 
@@ -408,12 +409,30 @@ function renderCurrentTab(currentPage) {
 	switch (currentPage) {
 		case "Active":
 			renderActiveTaskCards();
+			renderActiveTabStyling("Active");
 			return;
 		case "Completed":
 			renderCompletedTaskCards();
+			renderActiveTabStyling("Completed");
 			return;
 		default:
 			console.log("Invalid page to render", currentPage);
+	}
+}
+
+function renderActiveTabStyling(currentPage) {
+	console.log("renderStyling", currentPage);
+	switch (currentPage) {
+		case "Active":
+			$("#completed-tab-btn").removeClass("active-page");
+			$("#active-tab-btn").addClass("active-page");
+			return;
+		case "Completed":
+			$("#active-tab-btn").removeClass("active-page");
+			$("#completed-tab-btn").addClass("active-page");
+			return;
+		default:
+			console.log("Invalid active tab to style", currentPage);
 	}
 }
 
@@ -487,7 +506,7 @@ function render() {
 	renderColorBtns();
 
 	renderCurrentInputSection(currentInputState);
-	renderCurrentTab(currentPage);
+	renderCurrentTab(currentPageSelected);
 
 	// after page loads
 	renderShowCategoryDropdown();

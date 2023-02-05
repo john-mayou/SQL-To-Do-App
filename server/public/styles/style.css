@@ -165,6 +165,12 @@ body {
 	transform: translateY(0);
 }
 
+.active-page {
+	box-shadow: 0 4px 2px -2px rgb(46, 126, 246);
+	border-bottom: 1px solid rgb(46, 126, 246);
+	color: rgb(46, 126, 246);
+}
+
 #filter-and-sort__box {
 	display: flex;
 	gap: 1rem;
@@ -184,9 +190,6 @@ body {
 	padding: 0.3rem;
 	font-size: 1rem;
 	width: 10rem;
-}
-
-#clear-search-btn {
 }
 
 #new-category-inputs__section {
@@ -232,6 +235,7 @@ body {
 	width: 200px;
 	height: 200px;
 	border-radius: 1rem;
+	box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 
 .card-description {
