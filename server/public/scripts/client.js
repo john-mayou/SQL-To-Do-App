@@ -3,59 +3,12 @@ $(document).ready(onReady);
 function onReady() {
 	getCategories();
 	getTasks();
-	// $("#show-color-btns").on("click", handleToggleColorButton);
-	// $("#color-btn-list").on(
-	// 	"click",
-	// 	"#show-category-inputs-btn",
-	// 	handleShowNewCategoryInputs
-	// );
-	// $("#new-category-inputs__section").on(
-	// 	"click",
-	// 	"#add-new-category-btn",
-	// 	handleAddNewCategory
-	// );
-	// $("#color-btn-list").on(
-	// 	"click",
-	// 	"button:not(#show-category-inputs-btn)",
-	// 	handleShowNewTaskInput
-	// );
+
 	addSideBarEventListeners();
 	addInputSectionEventListeners();
-	// $("#new-category-inputs__section").on(
-	// 	"click",
-	// 	"#add-new-task-btn",
-	// 	handleAddNewTask
-	// );
-	// $("#new-category-inputs__section").on(
-	// 	"click",
-	// 	"#delete-category-btn",
-	// 	handleDeleteCategory
-	// );
-
 	addTaskCardEventListeners();
-	// After this is task box event listeners
-	// $("#todo-content__box").on("click", ".card-edit-btn", handleEditTask);
-	// $("#todo-content__box").on("click", ".cancel-edit-btn", handleCancelEdit);
-	// $("#todo-content__box").on("click", ".done-edit-btn", handleDoneEditing);
-	// $("#todo-content__box").on(
-	// 	"click",
-	// 	".complete-task-btn",
-	// 	handleToggleCompleteTask
-	// );
-	// $("#todo-content__box").on(
-	// 	"click",
-	// 	".uncomplete-task-btn",
-	// 	handleToggleCompleteTask
-	// );
-	// $("#todo-content__box").on(
-	// 	"click",
-	// 	".delete-task-btn",
-	// 	popupDeleteConfirmation
-	// );
-
-	// Listeners for different page btns
 	addPageSwitchListeners();
-	// $(".section-switch-btn").on("click", handleChangeCurrentPage);
+	addFilterAndSortEventListeners();
 }
 
 // Event listener functions
@@ -116,8 +69,12 @@ function addTaskCardEventListeners() {
 	);
 }
 
-// State
-// Toggling input fields and buttons
+function addFilterAndSortEventListeners() {
+	$("#sort-by-date-dropdown").on("change", handleNewDateFilter);
+	$("#description-search").on("input", handleNewDescriptionFilter);
+}
+
+// Toggling input fields and button states
 let showColorButtons = false;
 let idOfNewTaskCategory = null;
 let currentInputState = "Empty";
@@ -126,7 +83,11 @@ let currentInputState = "Empty";
 let currentPageSelected = "Active";
 let idCurrentCardBeingEdited = null;
 
-// Database states
+// Filter states
+let dateFilter = "ASC";
+let searchFilter;
+
+// States from database
 let categories = [];
 let tasks = [];
 
@@ -197,7 +158,7 @@ function popupDeleteConfirmation() {
 	});
 }
 
-// Toggling through selector and input fields
+// Event handler functions
 function handleToggleColorButton() {
 	showColorButtons ? (showColorButtons = false) : (showColorButtons = true);
 	render();
@@ -218,7 +179,6 @@ function handleShowNewCategoryInputs() {
 	render();
 }
 
-// Request functions
 function handleAddNewTask() {
 	let newTask = {
 		description: $("#description-input").val(),
@@ -234,7 +194,6 @@ function handleAddNewTask() {
 		data: newTask,
 	})
 		.then((response) => {
-			console.log("Response POST /task", response);
 			currentInputState = "Empty";
 			getTasks();
 		})
@@ -245,11 +204,10 @@ function handleAddNewTask() {
 
 function getTasks() {
 	$.ajax({
-		url: "/task",
+		url: `/task/${dateFilter}`,
 		method: "GET",
 	})
 		.then((response) => {
-			console.log("Response GET /task", response);
 			tasks = response;
 			render();
 		})
@@ -270,7 +228,6 @@ function handleAddNewCategory() {
 		data: newCategory,
 	})
 		.then((response) => {
-			console.log("Response POST /category", response);
 			currentInputState = "Empty";
 			getCategories();
 		})
@@ -285,7 +242,6 @@ function getCategories() {
 		method: "GET",
 	})
 		.then((response) => {
-			console.log("Response GET /category", response);
 			categories = response;
 			render();
 		})
@@ -302,7 +258,6 @@ function handleDeleteCategory() {
 		method: "DELETE",
 	})
 		.then((response) => {
-			console.log("Response DELETE /category/:id", response);
 			currentInputState = "Empty";
 			getCategories();
 		})
@@ -399,8 +354,18 @@ function handleDeleteTask(id) {
 
 function handleChangeCurrentPage() {
 	currentPageSelected = $(this).text().trim();
-	console.log("this is the new page", currentPageSelected.length);
 	render();
+}
+
+// Filter handler functions
+function handleNewDateFilter() {
+	dateFilter = $("#sort-by-date-dropdown :selected").val();
+	getTasks();
+}
+
+function handleNewDescriptionFilter() {
+	searchFilter = $("#description-search").val();
+	getTasks();
 }
 
 // Render functions
@@ -454,7 +419,7 @@ function renderNewCategoryInputs() {
 
 function renderActiveTaskCards() {
 	$("#todo-content__box").empty();
-	for (let task of tasks) {
+	for (let task of filterTasks([...tasks])) {
 		if (task.isComplete) {
 			continue;
 		}
@@ -469,7 +434,7 @@ function renderActiveTaskCards() {
 
 function renderCompletedTaskCards() {
 	$("#todo-content__box").empty();
-	for (let task of tasks) {
+	for (let task of filterTasks([...tasks])) {
 		if (!task.isComplete) {
 			continue;
 		}
@@ -483,9 +448,7 @@ function renderShowCategoryDropdown() {
 
 	// different starting options for different places on the DOM
 	$("#edit-category-select").append(`<option value="">New Category</option>`);
-	$("#filter-category-select").append(
-		`<option value="">Show category</option>`
-	);
+	$("#filter-category-select").append(`<option value="">Category</option>`);
 
 	for (let { id, category } of categories) {
 		$(".show-category-dropdown").append(`
@@ -510,7 +473,6 @@ function renderCurrentTab(currentPage) {
 }
 
 function renderActiveTabStyling(currentPage) {
-	console.log("renderStyling", currentPage);
 	switch (currentPage) {
 		case "Active":
 			$("#completed-tab-btn").removeClass("active-page");
@@ -542,6 +504,13 @@ function renderCurrentInputSection(currentInput) {
 }
 
 // Render helper functions
+function filterTasks(array) {
+	if (searchFilter) {
+		return array.filter((task) => task.description.includes(searchFilter));
+	}
+	return array;
+}
+
 function findColorOfTask(task) {
 	// if category exists, return category color, if not return dark gray
 	return categories.some((c) => c.id === task.categoryId)

@@ -59,7 +59,7 @@ body {
 }
 
 #show-color-btns:active {
-	transform: translateY(10px);
+	transform: translateY(5px);
 }
 
 #color-btn-list {
