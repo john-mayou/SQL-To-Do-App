@@ -29,13 +29,19 @@ function onReady() {
 }
 
 // State
+// Toggling input fields and buttons
 let showColorButtons = false;
 let showNewCategoryFields = false;
 let showNewTaskInput = false;
 let idOfNewTaskCategory = null;
+
+// Task card states
+
+// Database states
 let categoryOptions = [];
 let tasks = [];
 
+// Helper functions
 function getMonthFromNumber(number) {
 	if (number > 11) {
 		console.log("cannot convert number to month");
@@ -76,6 +82,7 @@ function getDateAndTime() {
 	return `${month} ${now.getDate()}, ${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}`;
 }
 
+// Toggling through selector and input fields
 function handleToggleColorButton() {
 	if (showColorButtons) {
 		showColorButtons = false;
@@ -99,6 +106,7 @@ function handleShowNewCategoryInputs() {
 	render();
 }
 
+// Request functions
 function handleAddNewTask() {
 	let newTask = {
 		description: $("#description-input").val(),
@@ -176,13 +184,14 @@ function getCategories() {
 		});
 }
 
+// Render functions
 function renderColorBtns() {
 	if (showColorButtons) {
 		$("#show-color-btns").html(`<i class="fa-solid fa-angle-up"></i>`);
 		$("#color-btn-list").empty();
 		for (let { id, category, color } of categoryOptions) {
 			$("#color-btn-list").append(`
-				<button 
+				<button
 					data-id="${id}"
 					data-category="${category}"
 					style="background-color:${color}"
