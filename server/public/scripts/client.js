@@ -209,6 +209,17 @@ function handleDeleteCategory() {
 
 function handleEditTask() {
 	idCurrentCardBeingEdited = $(this).closest(".card-box").data("id");
+	render();
+}
+
+function handleCancelEdit() {
+	idCurrentCardBeingEdited = null;
+	render();
+}
+
+function handleDoneEdit() {
+	idCurrentCardBeingEdited = null;
+	render();
 }
 
 // Render functions
@@ -259,32 +270,26 @@ function renderNewCategoryInputs() {
 function renderActiveTaskCards() {
 	$("#todo-content__box").empty();
 	for (let task of tasks) {
-		let color;
-		categories.some((c) => c.id === task.categoryId)
-			? (color = categories.find((c) => c.id === task.categoryId).color)
-			: (color = "#444444");
-		$("#todo-content__box").append(`
-			<div class="card-box" data-id="${task.id}" style="background-color:${color}a1">
-				<p class="card-description">${task.description}</p>
-				<div class="card-footer">
-					<span class="card-date">${task.timeStampCreated}</span>
-					<div class="card-btns__box">
-						<button class="card-edit-btn"><i class="fa-solid fa-pencil"></i></button>
-						<button class="complete-task-btn"><i class="fa-solid fa-check"></i></button>
-					</div>
-				</div>
-			</div>
-		`);
+		const color = findColorOfTask(task);
+		task.id === idCurrentCardBeingEdited
+			? $("#todo-content__box").append(createEditTaskCard(task, color))
+			: $("#todo-content__box").append(
+					createRegularTaskCard(task, color)
+			  );
 	}
 }
 
 function renderShowCategoryDropdown() {
-	$("#show-category-dropdown").empty();
-	$("#show-category-dropdown").append(
+	$(".show-category-dropdown").empty();
+
+	// different starting options for different places on the DOM
+	$("#edit-category-select").append(`<option value="">New Category</option>`);
+	$("#filter-category-select").append(
 		`<option value="">Show category</option>`
 	);
+
 	for (let { category } of categories) {
-		$("#show-category-dropdown").append(`
+		$(".show-category-dropdown").append(`
 			<option value="${category}">${category}</option>
 		`);
 	}
@@ -318,10 +323,48 @@ function renderCurrentInputSection(currentInput) {
 	}
 }
 
+// Render helper functions
+function findColorOfTask(task) {
+	// if category exists, return category color, if not return dark gray
+	return categories.some((c) => c.id === task.categoryId)
+		? categories.find((c) => c.id === task.categoryId).color
+		: "#444444";
+}
+
+function createRegularTaskCard(task, color) {
+	return `
+	<div class="card-box" data-id="${task.id}" style="background-color:${color}a1">
+		<p class="card-description">${task.description}</p>
+		<div class="card-footer">
+			<span class="card-date">${task.timeStampCreated}</span>
+			<div class="card-btns__box">
+				<button class="card-edit-btn"><i class="fa-solid fa-pencil"></i></button>
+				<button class="complete-task-btn"><i class="fa-solid fa-check"></i></button>
+			</div>
+		</div>
+	</div>`;
+}
+
+function createEditTaskCard(task, color) {
+	return `
+	<div class="card-box" data-id="${task.id}" style="background-color:${color}a1">
+		<p class="card-description"><textarea id="new-edit-description">${task.description}</textarea></p>
+		<div class="card-footer">
+			<select id="edit-category-select" class="show-category-dropdown"></select>
+			<div class="card-btns__box">
+				<button class="cancel-edit-btn">C</button>
+				<button class="done-edit-btn">Y</button>
+			</div>
+		</div>
+	</div>`;
+}
+
 function render() {
 	renderColorBtns();
-	renderShowCategoryDropdown();
 
 	renderCurrentInputSection(currentInputState);
 	renderCurrentTab(currentPage);
+
+	// after page loads
+	renderShowCategoryDropdown();
 }
