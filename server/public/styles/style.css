@@ -8,9 +8,6 @@
 
 body {
 	font-size: 62.5%;
-}
-/* 93c6e7 */
-body {
 	padding: 3rem;
 	background: linear-gradient(
 		to bottom right,
@@ -105,30 +102,6 @@ body {
 	font-size: 0.6rem;
 }
 
-/* #red-btn,
-.red-box {
-	background-color: orangered;
-}
-
-#orange-btn,
-.orange-box {
-	background-color: orange;
-}
-
-#purple-btn,
-.purple-box {
-	background-color: purple;
-}
-
-#blue-btn,
-.blue-box {
-	background-color: lightblue;
-}
-
-#green-btn {
-	background-color: lightgreen;
-} */
-
 #main {
 	position: fixed;
 	margin-left: 75px;
@@ -136,6 +109,11 @@ body {
 	background-color: #fff;
 	width: calc(100vw - 75px - (3rem * 2));
 	height: calc(100vh - (3rem * 2));
+	overflow: scroll;
+}
+
+#main::-webkit-scrollbar {
+	display: none;
 }
 
 /* animations */
@@ -232,6 +210,10 @@ body {
 	/* border: 1px solid blue; */
 	margin: 0;
 	overflow: scroll;
+}
+
+.card-description::-webkit-scrollbar {
+	display: none;
 }
 
 .card-footer {

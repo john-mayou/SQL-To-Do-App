@@ -37,6 +37,7 @@ let idOfNewTaskCategory = null;
 
 // Task card states
 let currentPage = "Active";
+let IdCurrentCardBeingEdited = null;
 
 // Database states
 let categories = [];
@@ -44,9 +45,6 @@ let tasks = [];
 
 // Helper functions
 function getMonthFromNumber(number) {
-	if (number > 11) {
-		console.log("cannot convert number to month");
-	}
 	switch (number) {
 		case 0:
 			return "Jan";
@@ -195,7 +193,7 @@ function renderColorBtns() {
 				<button
 					data-id="${id}"
 					data-category="${category}"
-					style="background-color:${color}"
+					style="background-color:${color}a1"
 				></button>
 			`);
 		}
@@ -236,7 +234,7 @@ function renderActiveTaskCards() {
 	for (let task of tasks) {
 		const color = categories.find((c) => c.id === task.categoryId).color;
 		$("#todo-content__box").append(`
-			<div class="card-box" data-id="${task.id}" style="background-color:${color}">
+			<div class="card-box" data-id="${task.id}" style="background-color:${color}a1">
 				<p class="card-description">${task.description}</p>
 				<div class="card-footer">
 					<span class="card-date">${task.timeStampCreated}</span>
