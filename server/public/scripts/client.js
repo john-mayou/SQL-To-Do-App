@@ -3,22 +3,81 @@ $(document).ready(onReady);
 function onReady() {
 	getCategories();
 	getTasks();
+	// $("#show-color-btns").on("click", handleToggleColorButton);
+	// $("#color-btn-list").on(
+	// 	"click",
+	// 	"#show-category-inputs-btn",
+	// 	handleShowNewCategoryInputs
+	// );
+	// $("#new-category-inputs__section").on(
+	// 	"click",
+	// 	"#add-new-category-btn",
+	// 	handleAddNewCategory
+	// );
+	// $("#color-btn-list").on(
+	// 	"click",
+	// 	"button:not(#show-category-inputs-btn)",
+	// 	handleShowNewTaskInput
+	// );
+	addSideBarEventListeners();
+	addInputSectionEventListeners();
+	// $("#new-category-inputs__section").on(
+	// 	"click",
+	// 	"#add-new-task-btn",
+	// 	handleAddNewTask
+	// );
+	// $("#new-category-inputs__section").on(
+	// 	"click",
+	// 	"#delete-category-btn",
+	// 	handleDeleteCategory
+	// );
+
+	addTaskCardEventListeners();
+	// After this is task box event listeners
+	// $("#todo-content__box").on("click", ".card-edit-btn", handleEditTask);
+	// $("#todo-content__box").on("click", ".cancel-edit-btn", handleCancelEdit);
+	// $("#todo-content__box").on("click", ".done-edit-btn", handleDoneEditing);
+	// $("#todo-content__box").on(
+	// 	"click",
+	// 	".complete-task-btn",
+	// 	handleToggleCompleteTask
+	// );
+	// $("#todo-content__box").on(
+	// 	"click",
+	// 	".uncomplete-task-btn",
+	// 	handleToggleCompleteTask
+	// );
+	// $("#todo-content__box").on(
+	// 	"click",
+	// 	".delete-task-btn",
+	// 	popupDeleteConfirmation
+	// );
+
+	// Listeners for different page btns
+	addPageSwitchListeners();
+	// $(".section-switch-btn").on("click", handleChangeCurrentPage);
+}
+
+// Event listener functions
+function addSideBarEventListeners() {
 	$("#show-color-btns").on("click", handleToggleColorButton);
 	$("#color-btn-list").on(
 		"click",
 		"#show-category-inputs-btn",
 		handleShowNewCategoryInputs
 	);
-	$("#new-category-inputs__section").on(
-		"click",
-		"#add-new-category-btn",
-		handleAddNewCategory
-	);
 	$("#color-btn-list").on(
 		"click",
 		"button:not(#show-category-inputs-btn)",
 		handleShowNewTaskInput
 	);
+}
+
+function addPageSwitchListeners() {
+	$(".section-switch-btn").on("click", handleChangeCurrentPage);
+}
+
+function addInputSectionEventListeners() {
 	$("#new-category-inputs__section").on(
 		"click",
 		"#add-new-task-btn",
@@ -29,8 +88,14 @@ function onReady() {
 		"#delete-category-btn",
 		handleDeleteCategory
 	);
+	$("#new-category-inputs__section").on(
+		"click",
+		"#add-new-category-btn",
+		handleAddNewCategory
+	);
+}
 
-	// After this is task box event listeners
+function addTaskCardEventListeners() {
 	$("#todo-content__box").on("click", ".card-edit-btn", handleEditTask);
 	$("#todo-content__box").on("click", ".cancel-edit-btn", handleCancelEdit);
 	$("#todo-content__box").on("click", ".done-edit-btn", handleDoneEditing);
@@ -49,9 +114,6 @@ function onReady() {
 		".delete-task-btn",
 		popupDeleteConfirmation
 	);
-
-	// Listeners for different page btns
-	$(".section-switch-btn").on("click", handleChangeCurrentPage);
 }
 
 // State
@@ -263,9 +325,16 @@ function handleDoneEditing() {
 	const id = idCurrentCardBeingEdited;
 	const currentState = tasks.find((t) => t.id === id);
 
+	// checking if user accidently reset their category to invalid category
+	let newCategory;
+	!$("#edit-category-select :selected").val() &&
+	categories.some((c) => c.id === currentState.categoryId)
+		? (newCategory = currentState.categoryId)
+		: (newCategory = Number($("#edit-category-select :selected").val()));
+
 	const updatedTask = {
 		description: $("#new-edit-description").val(),
-		categoryId: Number($("#edit-category-select :selected").val()),
+		categoryId: newCategory,
 		isComplete: currentState.isComplete,
 		timeStampCreated: currentState.timeStampCreated,
 		timeStampCompleted: currentState.timeStampCompleted,
