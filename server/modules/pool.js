@@ -12,7 +12,7 @@ if (process.env.DATABASE_URL) {
 	pool = new pg.Pool({
 		host: "localhost",
 		port: 5432,
-		database: "to_do_sql",
+		database: "weekend-to-do-app",
 	});
 }
 
