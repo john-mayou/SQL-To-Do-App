@@ -34,6 +34,14 @@ function onReady() {
 	$("#todo-content__box").on("click", ".card-edit-btn", handleEditTask);
 	$("#todo-content__box").on("click", ".cancel-edit-btn", handleCancelEdit);
 	$("#todo-content__box").on("click", ".done-edit-btn", handleDoneEditing);
+	$("#todo-content__box").on(
+		"click",
+		".complete-task-btn",
+		handleCompleteTask
+	);
+
+	// Listeners for different page btns
+	$(".section-switch-btn").on("click", handleChangeCurrentPage);
 }
 
 // State
@@ -247,6 +255,38 @@ function handleDoneEditing() {
 	render();
 }
 
+function handleCompleteTask() {
+	const id = $(this).closest(".card-box").data("id");
+	const currentState = tasks.find((t) => t.id === id);
+
+	const updatedTask = {
+		description: currentState.description,
+		categoryId: currentState.categoryId,
+		isComplete: true,
+		timeStampCreated: currentState.timeStampCreated,
+		timeStampCompleted: currentState.timeStampCompleted,
+	};
+
+	$.ajax({
+		url: `/task/${id}`,
+		method: "PUT",
+		data: updatedTask,
+	})
+		.then(() => {
+			getTasks();
+		})
+		.catch((error) => {
+			console.log("Error on PUT /task", error);
+		});
+
+	render();
+}
+
+function handleChangeCurrentPage() {
+	currentPage = $(this).text();
+	render();
+}
+
 // Render functions
 function renderColorBtns() {
 	if (showColorButtons) {
@@ -299,6 +339,24 @@ function renderNewCategoryInputs() {
 function renderActiveTaskCards() {
 	$("#todo-content__box").empty();
 	for (let task of tasks) {
+		if (task.isComplete) {
+			continue;
+		}
+		const color = findColorOfTask(task);
+		task.id === idCurrentCardBeingEdited
+			? $("#todo-content__box").append(createEditTaskCard(task, color))
+			: $("#todo-content__box").append(
+					createRegularTaskCard(task, color)
+			  );
+	}
+}
+
+function renderCompletedTaskCards() {
+	$("#todo-content__box").empty();
+	for (let task of tasks) {
+		if (!task.isComplete) {
+			continue;
+		}
 		const color = findColorOfTask(task);
 		task.id === idCurrentCardBeingEdited
 			? $("#todo-content__box").append(createEditTaskCard(task, color))
@@ -330,7 +388,7 @@ function renderCurrentTab(currentPage) {
 			renderActiveTaskCards();
 			return;
 		case "Completed":
-			// renderCompletedTaskCards();
+			renderCompletedTaskCards();
 			return;
 		default:
 			console.log("Invalid page to render", currentPage);
