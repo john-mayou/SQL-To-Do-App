@@ -93,6 +93,7 @@ let tasks = [];
 
 // Helper functions
 function getMonthFromNumber(number) {
+	// helper function for getDateAndTime
 	switch (number) {
 		case 0:
 			return "Jan";
@@ -124,6 +125,7 @@ function getMonthFromNumber(number) {
 }
 
 function getDateAndTime() {
+	// creates a new Date object and returns the a formatted time stamp string
 	let now = new Date();
 	const month = getMonthFromNumber(now.getMonth());
 	return `${month} ${now.getDate()}, ${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}`;
@@ -204,7 +206,7 @@ function handleAddNewTask() {
 
 function getTasks() {
 	$.ajax({
-		url: `/task/${dateFilter}`,
+		url: `/task/${dateFilter}`, // ASC or DESC
 		method: "GET",
 	})
 		.then((response) => {
@@ -219,7 +221,7 @@ function getTasks() {
 function handleAddNewCategory() {
 	const newCategory = {
 		category: toTitleCase($("#category-title-input").val()),
-		color: $("#category-color-input").val(),
+		color: $("#category-color-input").val(), // returns a hexcode
 	};
 
 	$.ajax({
@@ -287,6 +289,8 @@ function handleDoneEditing() {
 		? (newCategory = currentState.categoryId)
 		: (newCategory = Number($("#edit-category-select :selected").val()));
 
+	// update keeps the all original values exept description and categoryId
+	// sending the whole object allows me to only have one PUT endpoint server side
 	const updatedTask = {
 		description: $("#new-edit-description").val(),
 		categoryId: newCategory,
@@ -319,9 +323,9 @@ function handleToggleCompleteTask() {
 	const updatedTask = {
 		description: currentState.description,
 		categoryId: currentState.categoryId,
-		isComplete: inverseIsCompleteValue,
+		isComplete: inverseIsCompleteValue, // value is toggled
 		timeStampCreated: currentState.timeStampCreated,
-		timeStampCompleted: getDateAndTime(),
+		timeStampCompleted: getDateAndTime(), // sets from null to timestamp
 	};
 
 	$.ajax({
@@ -370,6 +374,7 @@ function handleNewDescriptionFilter() {
 
 // Render functions
 function renderColorBtns() {
+	// these are the side panel color dots
 	if (showColorButtons) {
 		$("#show-color-btns").html(`<i class="fa-solid fa-angle-up"></i>`);
 		$("#color-btn-list").empty();
@@ -392,6 +397,7 @@ function renderColorBtns() {
 }
 
 function renderNewTaskInput() {
+	// appends input fields for new task
 	const category = categories.find(
 		(c) => c.id === idOfNewTaskCategory
 	).category;
@@ -407,6 +413,7 @@ function renderNewTaskInput() {
 }
 
 function renderNewCategoryInputs() {
+	// appends category title and color inputs fields for new category
 	const HTML = `
 			<input id="category-title-input" type="text" placeholder="Category Title">
 			<input id="category-color-input" type="color">
@@ -418,6 +425,7 @@ function renderNewCategoryInputs() {
 }
 
 function renderActiveTaskCards() {
+	// renders either edited cards or regular cards when active page is focused
 	$("#todo-content__box").empty();
 	for (let task of filterTasks([...tasks])) {
 		if (task.isComplete) {
@@ -433,6 +441,7 @@ function renderActiveTaskCards() {
 }
 
 function renderCompletedTaskCards() {
+	// renders only completed cards when completed page is focused
 	$("#todo-content__box").empty();
 	for (let task of filterTasks([...tasks])) {
 		if (!task.isComplete) {
