@@ -71,8 +71,7 @@ function addTaskCardEventListeners() {
 
 function addFilterAndSortEventListeners() {
 	$("#sort-by-date-dropdown").on("change", handleNewDateFilter);
-	$("#sort-by-date-dropdown").on("change", handleNewCategoryFilter);
-	$("#sort-by-date-dropdown").on("change", handleNewDescriptionFilter);
+	$("#description-search").on("input", handleNewDescriptionFilter);
 }
 
 // Toggling input fields and button states
@@ -86,7 +85,6 @@ let idCurrentCardBeingEdited = null;
 
 // Filter states
 let dateFilter = "ASC";
-let categoryFilter;
 let searchFilter;
 
 // States from database
@@ -196,7 +194,6 @@ function handleAddNewTask() {
 		data: newTask,
 	})
 		.then((response) => {
-			console.log("Response POST /task", response);
 			currentInputState = "Empty";
 			getTasks();
 		})
@@ -211,7 +208,6 @@ function getTasks() {
 		method: "GET",
 	})
 		.then((response) => {
-			console.log("Response GET /task", response);
 			tasks = response;
 			render();
 		})
@@ -232,7 +228,6 @@ function handleAddNewCategory() {
 		data: newCategory,
 	})
 		.then((response) => {
-			console.log("Response POST /category", response);
 			currentInputState = "Empty";
 			getCategories();
 		})
@@ -247,7 +242,6 @@ function getCategories() {
 		method: "GET",
 	})
 		.then((response) => {
-			console.log("Response GET /category", response);
 			categories = response;
 			render();
 		})
@@ -264,7 +258,6 @@ function handleDeleteCategory() {
 		method: "DELETE",
 	})
 		.then((response) => {
-			console.log("Response DELETE /category/:id", response);
 			currentInputState = "Empty";
 			getCategories();
 		})
@@ -361,7 +354,6 @@ function handleDeleteTask(id) {
 
 function handleChangeCurrentPage() {
 	currentPageSelected = $(this).text().trim();
-	console.log("this is the new page", currentPageSelected.length);
 	render();
 }
 
@@ -371,9 +363,10 @@ function handleNewDateFilter() {
 	getTasks();
 }
 
-function handleNewCategoryFilter() {}
-
-function handleNewDescriptionFilter() {}
+function handleNewDescriptionFilter() {
+	searchFilter = $("#description-search").val();
+	getTasks();
+}
 
 // Render functions
 function renderColorBtns() {
@@ -426,7 +419,7 @@ function renderNewCategoryInputs() {
 
 function renderActiveTaskCards() {
 	$("#todo-content__box").empty();
-	for (let task of tasks) {
+	for (let task of filterTasks([...tasks])) {
 		if (task.isComplete) {
 			continue;
 		}
@@ -441,7 +434,7 @@ function renderActiveTaskCards() {
 
 function renderCompletedTaskCards() {
 	$("#todo-content__box").empty();
-	for (let task of tasks) {
+	for (let task of filterTasks([...tasks])) {
 		if (!task.isComplete) {
 			continue;
 		}
@@ -480,7 +473,6 @@ function renderCurrentTab(currentPage) {
 }
 
 function renderActiveTabStyling(currentPage) {
-	console.log("renderStyling", currentPage);
 	switch (currentPage) {
 		case "Active":
 			$("#completed-tab-btn").removeClass("active-page");
@@ -512,6 +504,13 @@ function renderCurrentInputSection(currentInput) {
 }
 
 // Render helper functions
+function filterTasks(array) {
+	if (searchFilter) {
+		return array.filter((task) => task.description.includes(searchFilter));
+	}
+	return array;
+}
+
 function findColorOfTask(task) {
 	// if category exists, return category color, if not return dark gray
 	return categories.some((c) => c.id === task.categoryId)
