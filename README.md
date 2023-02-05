@@ -11,3 +11,5 @@ For the task cards, the user can edit, complete, uncomplete and delete tasks fro
 There are also search and sort filters at the top that sort via description or organize from oldest to newest. The sort by newest/oldest returns a query that orders the rows by ASC or DESC based on id. The better way would be to parse the date-created/date-completed. This would be a feature that I would implement in the future.
 
 Also, for adding things to this project, I would add a way to filter via category. There is also room for improvement in the animation regard, which most actions are not equiped with.
+
+<img width="911" alt="Screenshot 2023-02-05 at 5 51 54 PM" src="https://user-images.githubusercontent.com/109235738/216853263-72c836aa-b7bc-477f-beb1-e216ee5a3171.png">
