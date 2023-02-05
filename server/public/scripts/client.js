@@ -34,6 +34,20 @@ function onReady() {
 	$("#todo-content__box").on("click", ".card-edit-btn", handleEditTask);
 	$("#todo-content__box").on("click", ".cancel-edit-btn", handleCancelEdit);
 	$("#todo-content__box").on("click", ".done-edit-btn", handleDoneEditing);
+	$("#todo-content__box").on(
+		"click",
+		".complete-task-btn",
+		handleToggleCompleteTask
+	);
+	$("#todo-content__box").on(
+		"click",
+		".uncomplete-task-btn",
+		handleToggleCompleteTask
+	);
+	$("#todo-content__box").on("click", ".delete-task-btn", handleDeleteTask);
+
+	// Listeners for different page btns
+	$(".section-switch-btn").on("click", handleChangeCurrentPage);
 }
 
 // State
@@ -93,6 +107,10 @@ function toTitleCase(str) {
 		.split(" ")
 		.map((w) => w[0].toUpperCase() + w.substring(1).toLowerCase())
 		.join(" ");
+}
+
+function getInverseBoolean(boolean) {
+	return boolean ? false : true;
 }
 
 // Toggling through selector and input fields
@@ -247,6 +265,44 @@ function handleDoneEditing() {
 	render();
 }
 
+function handleToggleCompleteTask() {
+	const id = $(this).closest(".card-box").data("id");
+	const currentState = tasks.find((t) => t.id === id);
+	let inverseIsCompleteValue = getInverseBoolean(currentState.isComplete);
+	console.log(inverseIsCompleteValue);
+
+	const updatedTask = {
+		description: currentState.description,
+		categoryId: currentState.categoryId,
+		isComplete: inverseIsCompleteValue,
+		timeStampCreated: currentState.timeStampCreated,
+		timeStampCompleted: getDateAndTime(),
+	};
+
+	$.ajax({
+		url: `/task/${id}`,
+		method: "PUT",
+		data: updatedTask,
+	})
+		.then(() => {
+			getTasks();
+		})
+		.catch((error) => {
+			console.log("Error on PUT /task", error);
+		});
+
+	render();
+}
+
+function handleDeleteTask() {
+	console.log("in delete task");
+}
+
+function handleChangeCurrentPage() {
+	currentPage = $(this).text();
+	render();
+}
+
 // Render functions
 function renderColorBtns() {
 	if (showColorButtons) {
@@ -299,12 +355,26 @@ function renderNewCategoryInputs() {
 function renderActiveTaskCards() {
 	$("#todo-content__box").empty();
 	for (let task of tasks) {
+		if (task.isComplete) {
+			continue;
+		}
 		const color = findColorOfTask(task);
 		task.id === idCurrentCardBeingEdited
 			? $("#todo-content__box").append(createEditTaskCard(task, color))
 			: $("#todo-content__box").append(
 					createRegularTaskCard(task, color)
 			  );
+	}
+}
+
+function renderCompletedTaskCards() {
+	$("#todo-content__box").empty();
+	for (let task of tasks) {
+		if (!task.isComplete) {
+			continue;
+		}
+		const color = findColorOfTask(task);
+		$("#todo-content__box").append(createCompletedTaskCard(task, color));
 	}
 }
 
@@ -330,7 +400,7 @@ function renderCurrentTab(currentPage) {
 			renderActiveTaskCards();
 			return;
 		case "Completed":
-			// renderCompletedTaskCards();
+			renderCompletedTaskCards();
 			return;
 		default:
 			console.log("Invalid page to render", currentPage);
@@ -384,6 +454,20 @@ function createEditTaskCard(task, color) {
 			<div class="card-btns__box">
 				<button class="cancel-edit-btn"><i class="fa-solid fa-ban"></i></button>
 				<button class="done-edit-btn"><i class="fa-solid fa-plus"></i></button>
+			</div>
+		</div>
+	</div>`;
+}
+
+function createCompletedTaskCard(task, color) {
+	return `
+	<div class="card-box" data-id="${task.id}" style="background-color:${color}a1">
+		<p class="card-description">${task.description}</p>
+		<div class="card-footer">
+			<span class="card-date">${task.timeStampCompleted}</span>
+			<div class="card-btns__box">
+				<button class="uncomplete-task-btn"><i class="fa-solid fa-rotate-left"></i></button>
+				<button class="delete-task-btn"><i class="fa-solid fa-trash"></i></button>
 			</div>
 		</div>
 	</div>`;

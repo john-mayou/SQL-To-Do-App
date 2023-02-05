@@ -268,7 +268,9 @@ body {
 .card-edit-btn,
 .cancel-edit-btn,
 .done-edit-btn,
-.complete-task-btn {
+.complete-task-btn,
+.uncomplete-task-btn,
+.delete-task-btn {
 	border: none;
 	border-radius: 50%;
 	background-color: black;
