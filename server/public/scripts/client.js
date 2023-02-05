@@ -271,8 +271,12 @@ function renderColorBtns() {
 }
 
 function renderNewTaskInput() {
+	const category = categories.find(
+		(c) => c.id === idOfNewTaskCategory
+	).category;
+
 	const HTML = `
-			<textarea id="description-input" placeholder="Task Description"></textarea>
+			<textarea id="description-input" placeholder="Add new ${category.toLowerCase()} task"></textarea>
 			<button id="add-new-task-btn" class="btn btn-success">Add Task</button>
 			<button id="delete-category-btn" class="btn btn-danger">Delete Category</button>
 	`;
