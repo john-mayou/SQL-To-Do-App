@@ -44,7 +44,11 @@ function onReady() {
 		".uncomplete-task-btn",
 		handleToggleCompleteTask
 	);
-	$("#todo-content__box").on("click", ".delete-task-btn", handleDeleteTask);
+	$("#todo-content__box").on(
+		"click",
+		".delete-task-btn",
+		popupDeleteConfirmation
+	);
 
 	// Listeners for different page btns
 	$(".section-switch-btn").on("click", handleChangeCurrentPage);
@@ -111,6 +115,24 @@ function toTitleCase(str) {
 
 function getInverseBoolean(boolean) {
 	return boolean ? false : true;
+}
+
+function popupDeleteConfirmation() {
+	const id = $(this).closest(".card-box").data("id");
+	Swal.fire({
+		title: "Are you sure?",
+		text: "You won't be able to revert this!",
+		icon: "warning",
+		showCancelButton: true,
+		confirmButtonColor: "#3085d6",
+		cancelButtonColor: "#d33",
+		confirmButtonText: "Yes, delete it!",
+	}).then((result) => {
+		if (result.isConfirmed) {
+			Swal.fire("Deleted!", "Your file has been deleted.", "success");
+			handleDeleteTask(id);
+		}
+	});
 }
 
 // Toggling through selector and input fields
@@ -293,9 +315,7 @@ function handleToggleCompleteTask() {
 	render();
 }
 
-function handleDeleteTask() {
-	const id = $(this).closest(".card-box").data("id");
-
+function handleDeleteTask(id) {
 	$.ajax({
 		url: `/task/${id}`,
 		method: "DELETE",
