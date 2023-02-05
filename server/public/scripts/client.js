@@ -24,6 +24,11 @@ function onReady() {
 		"#add-new-task-btn",
 		handleAddNewTask
 	);
+	$("#new-category-inputs__section").on(
+		"click",
+		"#delete-category-btn",
+		handleDeleteCategory
+	);
 
 	// After this is task box event listeners
 }
@@ -183,6 +188,22 @@ function getCategories() {
 		});
 }
 
+function handleDeleteCategory() {
+	const id = idOfNewTaskCategory;
+
+	$.ajax({
+		url: `/category/${id}`,
+		method: "DELETE",
+	})
+		.then((response) => {
+			console.log("Response DELETE /category/:id", response);
+			getCategories();
+		})
+		.catch((error) => {
+			console.log("Error on GET /category/:id", error);
+		});
+}
+
 // Render functions
 function renderColorBtns() {
 	if (showColorButtons) {
@@ -209,7 +230,8 @@ function renderColorBtns() {
 function renderNewTaskInput() {
 	const textAreaHTML = `
 			<textarea id="description-input" placeholder="Task Description"></textarea>
-			<button id="add-new-task-btn" class="btn btn-outline-dark">Add</button>
+			<button id="add-new-task-btn" class="btn btn-success">Add Task</button>
+			<button id="delete-category-btn" class="btn btn-danger">Delete Category</button>
 	`;
 
 	if (showNewTaskInput) {
@@ -232,7 +254,10 @@ function renderNewCategoryInputs() {
 function renderActiveTaskCards() {
 	$("#todo-content__box").empty();
 	for (let task of tasks) {
-		const color = categories.find((c) => c.id === task.categoryId).color;
+		let color;
+		categories.some((c) => c.id === task.categoryId)
+			? (color = categories.find((c) => c.id === task.categoryId).color)
+			: (color = "#444444");
 		$("#todo-content__box").append(`
 			<div class="card-box" data-id="${task.id}" style="background-color:${color}a1">
 				<p class="card-description">${task.description}</p>
@@ -268,6 +293,5 @@ function render() {
 	renderColorBtns();
 	renderNewCategoryInputs();
 	renderNewTaskInput();
-
 	renderCurrentTab(currentPage);
 }

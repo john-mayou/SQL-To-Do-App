@@ -38,4 +38,22 @@ router.post("/", (req, res) => {
 		});
 });
 
+router.delete("/:id", (req, res) => {
+	let queryText = `
+        DELETE FROM "categories"
+        WHERE id = $1;
+    `;
+
+	let queryParams = [req.params.id];
+
+	pool.query(queryText, queryParams)
+		.then(() => {
+			res.sendStatus(204);
+		})
+		.catch((error) => {
+			console.log(`Error making DELETE query: ${queryText}`, error);
+			res.sendStatus(500);
+		});
+});
+
 module.exports = router;
