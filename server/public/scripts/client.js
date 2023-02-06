@@ -3,6 +3,7 @@ $(document).ready(onReady);
 function onReady() {
 	getCategories();
 	getTasks();
+	handleNewDateFilter();
 
 	addSideBarEventListeners();
 	addInputSectionEventListeners();
