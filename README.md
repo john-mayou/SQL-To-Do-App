@@ -12,4 +12,6 @@ There are also search and sort filters at the top that sort via description or o
 
 Also, for adding things to this project, I would add a way to filter via category. There is also room for improvement in the animation regard, which most actions are not equiped with.
 
+Deployment Link -> https://cryptic-reef-41000.herokuapp.com/
+
 <img width="911" alt="Screenshot 2023-02-05 at 5 51 54 PM" src="https://user-images.githubusercontent.com/109235738/216853263-72c836aa-b7bc-477f-beb1-e216ee5a3171.png">
