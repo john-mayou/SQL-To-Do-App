@@ -1,5 +1,9 @@
 $(document).ready(onReady);
 
+/**
+ * Gets all tasks from database on load
+ * Holds all event listener functions
+ */
 function onReady() {
 	getCategories();
 	getTasks();
@@ -93,6 +97,11 @@ let categories = [];
 let tasks = [];
 
 // Helper functions
+/**
+ * Takes a zero-th month number and converts it into an abbreviated month string
+ * @param {number} number // month number 0 - 11
+ * @returns string
+ */
 function getMonthFromNumber(number) {
 	// helper function for getDateAndTime
 	switch (number) {
@@ -125,6 +134,10 @@ function getMonthFromNumber(number) {
 	}
 }
 
+/**
+ * Gets the current time, and returns a formated string version of it
+ * @returns string
+ */
 function getDateAndTime() {
 	// creates a new Date object and returns the a formatted time stamp string
 	let now = new Date();
@@ -132,6 +145,10 @@ function getDateAndTime() {
 	return `${month} ${now.getDate()}, ${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}`;
 }
 
+/**
+ * @param {string} str
+ * @returns string with the first character upper case (thing => Thing)
+ */
 function toTitleCase(str) {
 	return str
 		.split(" ")
@@ -139,10 +156,17 @@ function toTitleCase(str) {
 		.join(" ");
 }
 
+/**
+ * @param {boolean} boolean
+ * @returns inverse boolean of argument value
+ */
 function getInverseBoolean(boolean) {
 	return boolean ? false : true;
 }
 
+/**
+ * Swal popup to confirm deletion of todo task, on success handleDeleteTask is then called
+ */
 function popupDeleteConfirmation() {
 	const id = $(this).closest(".card-box").data("id");
 	Swal.fire({
@@ -162,11 +186,17 @@ function popupDeleteConfirmation() {
 }
 
 // Event handler functions
+/**
+ * Toggles state to hide or show category color buttons in side panel
+ */
 function handleToggleColorButton() {
 	showColorButtons ? (showColorButtons = false) : (showColorButtons = true);
 	render();
 }
 
+/**
+ * Changes state to re-render an input to add a new to-do item
+ */
 function handleShowNewTaskInput() {
 	idOfNewTaskCategory = $(this).data("id");
 	currentInputState = "New Task";
@@ -175,6 +205,9 @@ function handleShowNewTaskInput() {
 	render();
 }
 
+/**
+ * Changes state to re-render an input to add a new category
+ */
 function handleShowNewCategoryInputs() {
 	currentInputState = "New Category";
 
@@ -182,6 +215,10 @@ function handleShowNewCategoryInputs() {
 	render();
 }
 
+/**
+ * Gathers data from state and inputs, sends it to the database as a post
+ * Resets the input display state to remove it from the DOM
+ */
 function handleAddNewTask() {
 	let newTask = {
 		description: $("#description-input").val(),
@@ -196,7 +233,7 @@ function handleAddNewTask() {
 		method: "POST",
 		data: newTask,
 	})
-		.then((response) => {
+		.then(() => {
 			currentInputState = "Empty";
 			getTasks();
 		})
@@ -205,6 +242,9 @@ function handleAddNewTask() {
 		});
 }
 
+/**
+ * Fetches tasks from server, updates local state with response
+ */
 function getTasks() {
 	$.ajax({
 		url: `/task/${dateFilter}`, // ASC or DESC
@@ -219,6 +259,10 @@ function getTasks() {
 		});
 }
 
+/**
+ * Gathers category name and color inputs and sends them to the database via post
+ * Resets input state to empty the input container
+ */
 function handleAddNewCategory() {
 	const newCategory = {
 		category: toTitleCase($("#category-title-input").val()),
@@ -230,7 +274,7 @@ function handleAddNewCategory() {
 		method: "POST",
 		data: newCategory,
 	})
-		.then((response) => {
+		.then(() => {
 			currentInputState = "Empty";
 			getCategories();
 		})
@@ -239,6 +283,9 @@ function handleAddNewCategory() {
 		});
 }
 
+/**
+ * Fetches categories from server, updates local state with response
+ */
 function getCategories() {
 	$.ajax({
 		url: "/category",
@@ -253,6 +300,9 @@ function getCategories() {
 		});
 }
 
+/**
+ * Takes id from local state, sends a delete request to the server, re-fetches categories
+ */
 function handleDeleteCategory() {
 	const id = idOfNewTaskCategory;
 
@@ -260,7 +310,7 @@ function handleDeleteCategory() {
 		url: `/category/${id}`,
 		method: "DELETE",
 	})
-		.then((response) => {
+		.then(() => {
 			currentInputState = "Empty";
 			getCategories();
 		})
@@ -269,16 +319,25 @@ function handleDeleteCategory() {
 		});
 }
 
+/**
+ * Sets local state to the id of the click event using DOM traversal
+ */
 function handleEditTask() {
 	idCurrentCardBeingEdited = $(this).closest(".card-box").data("id");
 	render();
 }
 
+/**
+ * Resets local state of value being edited
+ */
 function handleCancelEdit() {
 	idCurrentCardBeingEdited = null;
 	render();
 }
 
+/**
+ * Extracts new values from edit inputs, updated server data, re-fetches changes
+ */
 function handleDoneEditing() {
 	const id = idCurrentCardBeingEdited;
 	const currentState = tasks.find((t) => t.id === id);
@@ -312,10 +371,14 @@ function handleDoneEditing() {
 			console.log("Error on PUT /task", error);
 		});
 
-	idCurrentCardBeingEdited = null;
+	idCurrentCardBeingEdited = null; // reset edit
 	render();
 }
 
+/**
+ * Finds id of click event, sends a put to the server to change isComplete and timeStampCompleted values
+ * Then fetches changes
+ */
 function handleToggleCompleteTask() {
 	const id = $(this).closest(".card-box").data("id");
 	const currentState = tasks.find((t) => t.id === id);
@@ -326,7 +389,7 @@ function handleToggleCompleteTask() {
 		categoryId: currentState.categoryId,
 		isComplete: inverseIsCompleteValue, // value is toggled
 		timeStampCreated: currentState.timeStampCreated,
-		timeStampCompleted: getDateAndTime(), // sets from null to timestamp
+		timeStampCompleted: getDateAndTime(), // sets from null to current timestamp
 	};
 
 	$.ajax({
@@ -344,6 +407,10 @@ function handleToggleCompleteTask() {
 	render();
 }
 
+/**
+ * Sends a delete request to the server with the id as a query param
+ * @param {number} id
+ */
 function handleDeleteTask(id) {
 	$.ajax({
 		url: `/task/${id}`,
@@ -357,17 +424,26 @@ function handleDeleteTask(id) {
 		});
 }
 
+/**
+ * Changes page state based on click event button value
+ */
 function handleChangeCurrentPage() {
 	currentPageSelected = $(this).text().trim();
 	render();
 }
 
 // Filter handler functions
+/**
+ * This is changing the state that getTasks uses in its query param
+ */
 function handleNewDateFilter() {
-	dateFilter = $("#sort-by-date-dropdown :selected").val();
+	dateFilter = $("#sort-by-date-dropdown :selected").val(); // dropdown value (ASC | DESC)
 	getTasks();
 }
 
+/**
+ * This sets local state to the string in the search input, this is then later to filter the DOM tasks
+ */
 function handleNewDescriptionFilter() {
 	searchFilter = $("#description-search").val();
 	getTasks();
