@@ -1,17 +1,38 @@
-# Project Name
+## Project Objective
 
-SQL To Do App
+Build an app to keep track of user tasks/to-do's using CRUD. Use Event - State - Render paradigm.
+I wanted to focus heavily on UI/UX design for this project and give the user an intuitive experience.
 
-## Description
+## Features
 
-The app lets the user use CRUD to keep track of their tasks/to-do's. I started with two databases, one for task categories and one for the tasks themselves. The panel on the left side allows the user to pick a category for their new task. After that, an input field appears for them to input their task description. Users can also add new categories, and delete them from the database.
+The user can:
 
-For the task cards, the user can edit, complete, uncomplete and delete tasks from the main section of the page. Once completed, the cards are located under the completed tab at the top to separate them from the active tasks. Once there, you can delete them or uncomplete them.
+-   Add, edit and delete tasks
+-   Create new categories, delete unwanted ones
+-   Filter by search and newest/oldest
+-   Complete and uncomplete tasks
 
-There are also search and sort filters at the top that sort via description or organize from oldest to newest. The sort by newest/oldest returns a query that orders the rows by ASC or DESC based on id. The better way would be to parse the date-created/date-completed. This would be a feature that I would implement in the future.
+## What I Learned
 
-Also, for adding things to this project, I would add a way to filter via category. There is also room for improvement in the animation regard, which most actions are not equiped with.
+-   Solidified the Event - State - Render paradigm using jQuery
+-   CSS Grid to organize cards in a responsive way
+-   Design principles from studying and planning the project
 
-Deployment Link -> https://cryptic-reef-41000.herokuapp.com/
+## What I Would Add In The Future
 
-<img width="911" alt="Screenshot 2023-02-05 at 5 51 54 PM" src="https://user-images.githubusercontent.com/109235738/216853263-72c836aa-b7bc-477f-beb1-e216ee5a3171.png">
+-   The sort by newest/oldest returns a query that orders the rows by ASC or DESC based on id. The better way would be to parse the date-created/date-completed.
+-   Filter by category dropdown
+-   CSS animations to enhance the user experience
+-   Incorporate Webpack into the project, I took a course on it recently and will be using it in the future
+
+## How To Run The Project
+
+Database name: `weekend-to-do-app`
+Data in: `database.sql`
+
+Run `npm install`
+Run `npm start`
+
+[Deploy Link 🚀](https://cryptic-reef-41000.herokuapp.com/)
+
+![Screenshot](app_picture.png)
