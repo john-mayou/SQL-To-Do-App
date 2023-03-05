@@ -27,11 +27,11 @@ The user can:
 
 ## How To Run The Project
 
-Database name: `weekend-to-do-app`
-Data in: `database.sql`
+-   Database name: `weekend-to-do-app`
+-   Data in: `database.sql`
 
-Run `npm install`
-Run `npm start`
+-   Run `npm install`
+-   Run `npm start`
 
 [Deploy Link 🚀](https://cryptic-reef-41000.herokuapp.com/)
 
